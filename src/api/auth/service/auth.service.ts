@@ -1,4 +1,4 @@
-import { Body, Injectable } from '@nestjs/common';
+import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { userDto } from '../dto/userDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,6 +7,9 @@ import * as bcrypt from 'bcrypt';
 import { UserResponseDto } from '../dto/UserResponseDto';
 import { signInDto } from '../dto/singInDto';
 import { JwtService } from '@nestjs/jwt';
+import { throwHttpException } from '../../../common/error/error.handler';
+import { ERROR_MESSAGES } from '../../../common/constant/error-messages';
+import { SUCCESS_MESSAGE } from '../../../common/constant/success-message';
 
 @Injectable()
 export class AuthService {
@@ -50,19 +53,19 @@ export class AuthService {
         expiresIn: '24h',
       }),
     };
-    return { data: token, message: '로그인 성공' };
+    return { data: token, message: SUCCESS_MESSAGE.LOGIN };
   }
 
   async validateUser(loginId, password) {
     const user = await this.userRepository.findOne({ where: { loginId } });
 
     if (!user) {
-      throw new Error('존재하지 않은 유저입니다.');
+      throwHttpException(ERROR_MESSAGES.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
 
     const isLogin = await bcrypt.compare(password, user.password);
     if (!isLogin) {
-      throw new Error('로그인 실패 아이디 혹은 패스워드를 다시 확인해주세요!');
+      throwHttpException(ERROR_MESSAGES.LOGIN_FAILED, HttpStatus.BAD_REQUEST);
     }
 
     return user;
