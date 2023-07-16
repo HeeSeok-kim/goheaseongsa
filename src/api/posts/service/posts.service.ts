@@ -6,44 +6,72 @@ import { updatePostsDto } from '../dto/update.posts.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from '../../../database/post.entity';
 import { Repository } from 'typeorm';
+import { User } from '../../../database/user.entity';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post) private postRepository: Repository<Post>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
   async getPosts(query: getPostsDto) {
     const { page, search } = query;
     const take = 5;
-    return this.postRepository.find({
-      take,
-      skip: (page - 1) * take,
-      order: {
-        createAt: 'DESC',
-      },
-    });
+    const skip = (page - 1) * take;
+    const result = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .select(['post', 'user.name'])
+      .skip(skip)
+      .take(take)
+      .orderBy('post.createAt', 'DESC')
+      .getMany();
+
+    return { data: result };
   }
 
-  async createdPosts(body: createPostsDto) {
-    return this.postRepository.save(body);
+  async createdPosts(body: createPostsDto, req) {
+    const user = await this.userRepository.findOne({
+      where: { userId: req.userId },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    body.user = user;
+    const savedPost = await this.postRepository.save(body);
+
+    const result = {
+      postId: savedPost.postId,
+      title: savedPost.title,
+      content: savedPost.content,
+      createAt: savedPost.createAt,
+      updateAt: savedPost.updateAt,
+    };
+
+    return { data: result, message: '게시글 작성 완료!' };
   }
 
   async getDetailPost(param: detailPostsDto) {
     const { postId } = param;
-    return this.postRepository
+    const result = await this.postRepository
       .createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
       .leftJoinAndSelect('post.comment', 'comment')
-      .leftJoinAndSelect('comment.user', 'user')
+      .leftJoinAndSelect('comment.user', 'commentUser')
       .select([
         'post',
+        'user.name',
         'comment.commentId',
         'comment.comment',
+        'commentUser.name',
         'comment.createAt',
         'comment.updateAt',
-        'user.nickName',
       ])
       .where('post.postId = :postId', { postId })
       .getOne();
+    return { data: result };
   }
 
   async updatePosts(param: detailPostsDto, body: updatePostsDto) {

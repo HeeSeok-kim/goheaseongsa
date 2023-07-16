@@ -1,12 +1,8 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { User } from '../../../database/user.entity';
 
 export class createPostsDto {
-  @Transform(({ value }) => Number(value))
-  @IsNumber()
-  @IsNotEmpty()
-  userId: number;
-
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -17,9 +13,6 @@ export class createPostsDto {
 
   @IsString()
   @IsNotEmpty()
-  team: string;
-
-  @IsString()
-  @IsNotEmpty()
   templateType: string;
+  user: User;
 }
