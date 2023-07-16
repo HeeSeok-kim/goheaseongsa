@@ -14,6 +14,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../../database/user.entity';
 import { throwHttpException } from '../../../common/error/error.handler';
 import { ERROR_MESSAGES } from '../../../common/constant/error-messages';
+import { SUCCESS_MESSAGE } from '../../../common/constant/success-message';
 
 @Injectable()
 export class PostsService {
@@ -57,7 +58,7 @@ export class PostsService {
       updateAt: savedPost.updateAt,
     };
 
-    return { data: result, message: '게시글 작성 완료!' };
+    return { data: result, message: SUCCESS_MESSAGE.POST };
   }
 
   async getDetailPost(param: detailPostsDto) {

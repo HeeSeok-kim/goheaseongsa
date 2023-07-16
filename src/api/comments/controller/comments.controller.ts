@@ -33,6 +33,12 @@ export class CommentsController {
     return this.commentService.deleteComment(param, req.user);
   }
 
-  @Put(':comment')
-  async updateComment() {}
+  @Put(':commentId')
+  async updateComment(
+    @Param() param: CommentParamDto,
+    @Req() req,
+    @Body() body: createCommentDto,
+  ) {
+    return this.commentService.updateComment(param, req.user, body);
+  }
 }
