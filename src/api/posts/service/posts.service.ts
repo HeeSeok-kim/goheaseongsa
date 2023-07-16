@@ -1,4 +1,9 @@
-import { Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { getPostsDto } from '../dto/get.posts.dto';
 import { createPostsDto } from '../dto/create.posts.dto';
 import { detailPostsDto } from '../dto/detail.posts.dto';
@@ -7,6 +12,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from '../../../database/post.entity';
 import { Repository } from 'typeorm';
 import { User } from '../../../database/user.entity';
+import { throwHttpException } from '../../../common/error/error.handler';
+import { ERROR_MESSAGES } from '../../../common/constant/error-messages';
 
 @Injectable()
 export class PostsService {
@@ -36,7 +43,7 @@ export class PostsService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throwHttpException(ERROR_MESSAGES.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
 
     body.user = user;

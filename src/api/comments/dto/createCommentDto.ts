@@ -6,14 +6,14 @@ import {
   IsString,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { User } from '../../../database/user.entity';
+import { Post } from '../../../database/post.entity';
 
 export class createCommentDto {
-  @Transform(({ value }) => Number(value))
-  @IsNumber()
-  @IsNotEmpty()
-  userId: number;
-
   @IsString()
   @IsNotEmpty()
   comment: string;
+
+  user: User;
+  post: Post;
 }
