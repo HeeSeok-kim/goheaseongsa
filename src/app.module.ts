@@ -1,5 +1,5 @@
-import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module, ValidationPipe } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './database/user.entity';
 import { Comment } from './database/comment.entity';

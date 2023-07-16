@@ -48,10 +48,10 @@ export class AuthService {
     const { userId, loginId } = req.user;
     const payload = { userId: userId, loginId: loginId };
     const token = {
-      access_token: this.jwtService.sign(payload, {
+      access_token: `Bearer ${this.jwtService.sign(payload, {
         secret: process.env.SECRET_KEY,
         expiresIn: '24h',
-      }),
+      })}`,
     };
     return { data: token, message: SUCCESS_MESSAGE.LOGIN };
   }
