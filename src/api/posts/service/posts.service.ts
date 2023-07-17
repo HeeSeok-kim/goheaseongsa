@@ -15,12 +15,14 @@ import { User } from '../../../database/user.entity';
 import { throwHttpException } from '../../../common/error/error.handler';
 import { ERROR_MESSAGES } from '../../../common/constant/error-messages';
 import { SUCCESS_MESSAGE } from '../../../common/constant/success-message';
+import { Like } from '../../../database/like.entity';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post) private postRepository: Repository<Post>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Like) private readonly likeRepository: Repository<Like>,
   ) {}
   async getPosts(query: getPostsDto) {
     const { page, search } = query;
@@ -79,6 +81,11 @@ export class PostsService {
       ])
       .where('post.postId = :postId', { postId })
       .getOne();
+    const likeCount = await this.likeRepository.count({
+      where: { post: { postId: postId } },
+    });
+    result['likeCount'] = likeCount;
+
     return { data: result };
   }
 
