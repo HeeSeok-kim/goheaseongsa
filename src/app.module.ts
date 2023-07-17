@@ -10,12 +10,14 @@ import { PostsModule } from './api/posts/posts.module';
 import { APP_PIPE } from '@nestjs/core';
 import { CommentsModule } from './api/comments/comments.module';
 import { AuthModule } from './api/auth/auth.module';
+import { LikesModule } from './api/likes/likes.module';
 
 @Module({
   imports: [
     PostsModule,
     CommentsModule,
     AuthModule,
+    LikesModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
