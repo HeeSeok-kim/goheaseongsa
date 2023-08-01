@@ -45,13 +45,19 @@ export class AuthService {
   }
 
   async signIn(req) {
-    const { userId, loginId } = req.user;
+    const { userId, loginId, name } = req.user;
+    console.log(req.user);
     const payload = { userId: userId, loginId: loginId };
     const token = {
       access_token: `Bearer ${this.jwtService.sign(payload, {
         secret: process.env.SECRET_KEY,
         expiresIn: '24h',
       })}`,
+      user: {
+        userId,
+        loginId,
+        name,
+      },
     };
     return { data: token, message: SUCCESS_MESSAGE.LOGIN };
   }
