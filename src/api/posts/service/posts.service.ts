@@ -25,8 +25,8 @@ export class PostsService {
     @InjectRepository(Like) private readonly likeRepository: Repository<Like>,
   ) {}
   async getPosts(query: getPostsDto) {
-    const { page, search } = query;
-    const take = 5;
+    const { page, search, limit } = query;
+    const take = limit ? limit : 12;
     const skip = (page - 1) * take;
     const result = await this.postRepository
       .createQueryBuilder('post')
