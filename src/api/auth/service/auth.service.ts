@@ -1,11 +1,10 @@
-import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Body, HttpStatus, Injectable } from '@nestjs/common';
 import { userDto } from '../dto/userDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../../database/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserResponseDto } from '../dto/UserResponseDto';
-import { signInDto } from '../dto/singInDto';
 import { JwtService } from '@nestjs/jwt';
 import { throwHttpException } from '../../../common/error/error.handler';
 import { ERROR_MESSAGES } from '../../../common/constant/error-messages';
@@ -28,6 +27,7 @@ export class AuthService {
     }
     const newUser = {
       ...body,
+      nickName: '익명의머쓱이',
       isAdmin: false,
       grade: 0,
     };

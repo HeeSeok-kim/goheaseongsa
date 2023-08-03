@@ -10,7 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('/singup')
+  @Post('/signup')
   async signUp(
     @Body() body: userDto,
   ): Promise<{ data: UserResponseDto; message: string }> {
