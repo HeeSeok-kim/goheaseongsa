@@ -23,8 +23,9 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { loginId } });
 
     if (user) {
-      throw user;
+      throwHttpException(ERROR_MESSAGES.USER_OVERLAP, HttpStatus.CONFLICT);
     }
+
     const newUser = {
       ...body,
       nickName: '익명의머쓱이',
