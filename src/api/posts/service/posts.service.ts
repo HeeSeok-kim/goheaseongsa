@@ -63,7 +63,7 @@ export class PostsService {
     return { data: result, message: SUCCESS_MESSAGE.POST };
   }
 
-  async getDetailPost(param: detailPostsDto) {
+  async getDetailPost(param: detailPostsDto, user) {
     const { postId } = param;
     const result = await this.postRepository
       .createQueryBuilder('post')
@@ -84,7 +84,18 @@ export class PostsService {
     const likeCount = await this.likeRepository.count({
       where: { post: { postId: postId } },
     });
+    result['isLike'] = false;
     result['likeCount'] = likeCount;
+
+    if (user) {
+      const likeUser = await this.likeRepository.findOne({
+        where: {
+          post: { postId: postId },
+          user: { userId: user.userId },
+        },
+      });
+      result['isLike'] = likeUser ? true : false;
+    }
 
     return { data: result };
   }

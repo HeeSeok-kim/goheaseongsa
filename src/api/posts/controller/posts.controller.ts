@@ -16,6 +16,7 @@ import { updatePostsDto } from '../dto/update.posts.dto';
 import { PostsService } from '../service/posts.service';
 import { detailPostsDto } from '../dto/detail.posts.dto';
 import { JwtAuthGuard } from '../../auth/strategy/jwt/jwt.auth.guard';
+import { OptionalJwtAuthGuard } from '../../auth/strategy/jwt/jwt.option.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -32,9 +33,10 @@ export class PostsController {
     return this.postService.createdPosts(body, req.user);
   }
 
+  @UseGuards(OptionalJwtAuthGuard)
   @Get(':postId')
-  async getDetailPost(@Param() param: detailPostsDto) {
-    return this.postService.getDetailPost(param);
+  async getDetailPost(@Param() param: detailPostsDto, @Req() req) {
+    return this.postService.getDetailPost(param, req.user);
   }
 
   @Put(':postId')

@@ -12,10 +12,10 @@ import { detailPostsDto } from '../../posts/dto/detail.posts.dto';
 import { JwtAuthGuard } from '../../auth/strategy/jwt/jwt.auth.guard';
 
 @Controller('/posts/:postId')
-@UseGuards(JwtAuthGuard)
 export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Put('likes')
   async postLike(@Param() param: detailPostsDto, @Req() req) {
     return this.likesService.postLike(param, req.user);
