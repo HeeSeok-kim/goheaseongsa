@@ -31,6 +31,10 @@ export class PostsService {
     const result = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.user', 'user')
+      .leftJoinAndSelect('post.comment', 'comment')
+      .leftJoinAndSelect('post.like', 'like')
+      .loadRelationCountAndMap('post.commentCount', 'post.comment')
+      .loadRelationCountAndMap('post.likeCount', 'post.like')
       .select(['post', 'user.name'])
       .skip(skip)
       .take(take)
