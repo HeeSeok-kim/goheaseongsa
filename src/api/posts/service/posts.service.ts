@@ -100,6 +100,26 @@ export class PostsService {
     return { data: result };
   }
 
+  async myPost(user) {
+    try {
+      const { userId } = user;
+      const result = await this.postRepository
+        .createQueryBuilder('post')
+        .leftJoinAndSelect('post.user', 'user')
+        .leftJoinAndSelect('post.comment', 'comment')
+        .leftJoinAndSelect('post.like', 'like')
+        .loadRelationCountAndMap('post.commentCount', 'post.comment')
+        .loadRelationCountAndMap('post.likeCount', 'post.like')
+        .select(['post', 'user.name'])
+        .where('user.userId = :userId', { userId })
+        .orderBy('post.createAt', 'DESC')
+        .getMany();
+      return { data: result };
+    } catch (error) {
+      throwHttpException(ERROR_MESSAGES.POST_FAIL, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async updatePosts(param: detailPostsDto, body: updatePostsDto) {
     return param;
   }
