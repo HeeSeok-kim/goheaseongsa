@@ -11,6 +11,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { CommentsModule } from './api/comments/comments.module';
 import { AuthModule } from './api/auth/auth.module';
 import { LikesModule } from './api/likes/likes.module';
+import { ForgivenModule } from './api/forgivene/forgiven.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LikesModule } from './api/likes/likes.module';
     CommentsModule,
     AuthModule,
     LikesModule,
+    ForgivenModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
