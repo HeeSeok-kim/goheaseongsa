@@ -16,6 +16,7 @@ import { throwHttpException } from '../../../common/error/error.handler';
 import { ERROR_MESSAGES } from '../../../common/constant/error-messages';
 import { SUCCESS_MESSAGE } from '../../../common/constant/success-message';
 import { Like } from '../../../database/like.entity';
+import { Forgive } from '../../../database/forgive.entity';
 
 @Injectable()
 export class PostsService {
@@ -23,6 +24,8 @@ export class PostsService {
     @InjectRepository(Post) private postRepository: Repository<Post>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Like) private readonly likeRepository: Repository<Like>,
+    @InjectRepository(Forgive)
+    private readonly forgiveRepository: Repository<Forgive>,
   ) {}
   async getPosts(query: getPostsDto) {
     const { page, search, limit } = query;
@@ -33,9 +36,11 @@ export class PostsService {
       .leftJoinAndSelect('post.user', 'user')
       .leftJoinAndSelect('post.comment', 'comment')
       .leftJoinAndSelect('post.like', 'like')
+      .leftJoinAndSelect('post.forgive', 'forgive')
       .loadRelationCountAndMap('post.commentCount', 'post.comment')
       .loadRelationCountAndMap('post.likeCount', 'post.like')
-      .select(['post', 'user.name'])
+      .loadRelationCountAndMap('post.forgiveCount', 'post.forgive')
+      .select(['post', 'user.name', 'user.nickName'])
       .skip(skip)
       .take(take)
       .orderBy('post.createAt', 'DESC')
@@ -77,6 +82,7 @@ export class PostsService {
       .select([
         'post',
         'user.name',
+        'user.nickName',
         'comment.commentId',
         'comment.comment',
         'commentUser.name',
@@ -88,8 +94,13 @@ export class PostsService {
     const likeCount = await this.likeRepository.count({
       where: { post: { postId: postId } },
     });
+    const forgiveCount = await this.forgiveRepository.count({
+      where: { post: { postId: postId } },
+    });
     result['isLike'] = false;
+    result['isForgive'] = false;
     result['likeCount'] = likeCount;
+    result['forgiveCount'] = forgiveCount;
 
     if (user) {
       const likeUser = await this.likeRepository.findOne({
@@ -98,7 +109,14 @@ export class PostsService {
           user: { userId: user.userId },
         },
       });
+      const forgiveUser = await this.forgiveRepository.findOne({
+        where: {
+          post: { postId: postId },
+          user: { userId: user.userId },
+        },
+      });
       result['isLike'] = likeUser ? true : false;
+      result['isForgive'] = forgiveUser ? true : false;
     }
 
     return { data: result };
@@ -112,9 +130,11 @@ export class PostsService {
         .leftJoinAndSelect('post.user', 'user')
         .leftJoinAndSelect('post.comment', 'comment')
         .leftJoinAndSelect('post.like', 'like')
+        .leftJoinAndSelect('post.forgive', 'forgive')
         .loadRelationCountAndMap('post.commentCount', 'post.comment')
         .loadRelationCountAndMap('post.likeCount', 'post.like')
-        .select(['post', 'user.name'])
+        .loadRelationCountAndMap('post.forgiveCount', 'post.forgive')
+        .select(['post', 'user.name', 'user.nickName'])
         .where('user.userId = :userId', { userId })
         .orderBy('post.createAt', 'DESC')
         .getMany();
