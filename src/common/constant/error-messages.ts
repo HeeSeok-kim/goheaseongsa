@@ -7,4 +7,7 @@ export const ERROR_MESSAGES = {
   COMMENT_NOT_DELETE: '본인 댓글만 삭제할 수 있습니다.',
   COMMENT_NOT_EDIT: '본인 댓글만 수정할 수 있습니다.',
   COMMENT_NOT_CHANGE: '변경 사항이 없습니다.',
+  DELETE_NOT_FAIL: '게시글 삭제를 실패했습니다.',
+  USER_NOT_EDIT: '유저 정보수정을 실패하였습니다.',
+  POST_FAIL: '게시글 조회를 실패했습니다.',
 };

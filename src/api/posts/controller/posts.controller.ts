@@ -6,7 +6,6 @@ import {
   Put,
   Query,
   Param,
-  ParseIntPipe,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -31,6 +30,12 @@ export class PostsController {
   @Post()
   async createdPosts(@Body() body: createPostsDto, @Req() req) {
     return this.postService.createdPosts(body, req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/mypost')
+  async myPost(@Req() req) {
+    return this.postService.myPost(req.user);
   }
 
   @UseGuards(OptionalJwtAuthGuard)

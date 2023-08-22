@@ -47,7 +47,6 @@ export class AuthService {
 
   async signIn(req) {
     const { userId, loginId, name } = req.user;
-    console.log(req.user);
     const payload = { userId: userId, loginId: loginId };
     const token = {
       access_token: `Bearer ${this.jwtService.sign(payload, {
@@ -76,5 +75,42 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async deleteUser(req) {
+    const data = await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ loginId: '', password: '' })
+      .where('userId = :id', { id: req.userId })
+      .execute();
+
+    if (!data.affected) {
+      throwHttpException(
+        ERROR_MESSAGES.DELETE_NOT_FAIL,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return { message: SUCCESS_MESSAGE.USER_DELETE };
+  }
+
+  async editPassword(body, req) {
+    const { password } = body;
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const data = await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ password: hashedPassword })
+      .where('userId = :id', { id: req.userId })
+      .execute();
+
+    if (!data.affected) {
+      throwHttpException(ERROR_MESSAGES.USER_NOT_EDIT, HttpStatus.BAD_REQUEST);
+    }
+
+    return { message: SUCCESS_MESSAGE.EDIT_USER };
   }
 }
