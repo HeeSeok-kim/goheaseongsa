@@ -51,7 +51,7 @@ export class AuthService {
     const token = {
       access_token: `Bearer ${this.jwtService.sign(payload, {
         secret: process.env.SECRET_KEY,
-        expiresIn: '24h',
+        expiresIn: '999d',
       })}`,
       user: {
         userId,
