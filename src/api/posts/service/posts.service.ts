@@ -86,6 +86,7 @@ export class PostsService {
         'comment.commentId',
         'comment.comment',
         'commentUser.name',
+        'commentUser.userId',
         'comment.createAt',
         'comment.updateAt',
       ])
